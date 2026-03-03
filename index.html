@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gender & Age Predictor</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 520px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    h1 { color: #0f3460; font-size: 26px; margin-bottom: 8px; }
+    p.sub { color: #888; font-size: 13px; margin-bottom: 25px; }
+
+    /* ✅ Upload area shows selected image */
+    .upload-area {
+      border: 2px dashed #0f3460;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-area:hover { background: #f0f4ff; }
+
+    /* ✅ File input covers entire upload area - clickable anywhere */
+    .upload-area input[type="file"] {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .upload-placeholder { text-align: center; }
+    .upload-placeholder .icon { font-size: 40px; margin-bottom: 8px; }
+    .upload-placeholder span { color: #0f3460; font-weight: bold; font-size: 15px; }
+    .upload-placeholder p { color: #aaa; font-size: 12px; margin-top: 4px; }
+
+    /* ✅ Preview image inside the box */
+    #preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      display: none;
+      z-index: 5;
+    }
+
+    #file-name {
+      font-size: 12px;
+      color: #4CAF50;
+      margin-top: 6px;
+      font-weight: bold;
+      display: none;
+    }
+
+    button[type="submit"] {
+      background: linear-gradient(135deg, #0f3460, #533483);
+      color: white;
+      border: none;
+      padding: 13px 40px;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: opacity 0.2s;
+    }
+    button[type="submit"]:hover { opacity: 0.9; }
+
+    .result-box {
+      margin-top: 25px;
+      background: #f0f4ff;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .result-box h2 { color: #333; margin-bottom: 12px; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .card .label { color: #888; font-size: 13px; }
+    .card .value { color: #0f3460; font-size: 20px; font-weight: bold; }
+    .male   { border-left: 4px solid #2196F3; }
+    .female { border-left: 4px solid #E91E63; }
+    .age    { border-left: 4px solid #4CAF50; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧠 Gender & Age Predictor</h1>
+    <p class="sub">Upload a face image — AI will predict gender and age</p>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="upload-area" id="uploadArea">
+
+        <!-- ✅ Invisible file input covers whole area -->
+        <input type="file" id="imgInput" name="image"
+               accept="image/*" required
+               onchange="handleFile(event)">
+
+        <!-- Shown before image selected -->
+        <div class="upload-placeholder" id="placeholder">
+          <div class="icon">📁</div>
+          <span>Click to upload image</span>
+          <p>JPG, PNG supported</p>
+        </div>
+
+        <!-- ✅ Shown after image selected -->
+        <img id="preview" src="" alt="preview"/>
+        <div id="file-name"></div>
+
+      </div>
+
+      <button type="submit">🔍 Predict Now</button>
+    </form>
+
+    {% if result %}
+    <div class="result-box">
+      <h2>✅ Results</h2>
+      <div class="card {{ 'male' if result.gender == 'Male' else 'female' }}">
+        <span class="label">👤 Gender</span>
+        <span class="value">{{ result.gender }}</span>
+      </div>
+      <div class="card age">
+        <span class="label">🎂 Age</span>
+        <span class="value">{{ result.age }} years</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function handleFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // ✅ Show preview image
+      const preview = document.getElementById('preview');
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+
+      // ✅ Hide placeholder text
+      document.getElementById('placeholder').style.display = 'none';
+
+      // ✅ Show file name
+      const nameEl = document.getElementById('file-name');
+      nameEl.textContent = '✅ ' + file.name;
+      nameEl.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
